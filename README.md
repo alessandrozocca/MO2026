@@ -18,6 +18,19 @@ package metadata yet. The planned `mo2026` package, reviewed `common.py` and imm
 separate migration steps; a `pip install` of this Git repository is not the current installation method.
 Pin a reviewed commit or tag when preparing the 2026 notebook setup cells.
 
+The revised notebooks also support a local checkout through `MO2026_REPO`. Set
+it before starting Jupyter, for example:
+
+```bash
+export MO2026_REPO="/path/to/MO2026"
+jupyter lab
+```
+
+Use the directory containing `installer.py` and the `tutorial*.py` modules. This
+override imports the local files directly, without applying the public commit's
+checksums, so staff can test helper edits. Without the override, the notebooks
+download and verify their pinned public helpers.
+
 ## Python dependencies
 
 Activate the environment used by your local notebook and install:
