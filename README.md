@@ -73,8 +73,10 @@ See [IDAES binary installation options](https://idaes-pse.readthedocs.io/en/late
 The old catalog of CBC, CPLEX and other solver installers has been retired. The revised 2026 week-1
 notebook uses HiGHS and pins its drawing helpers to published commit `2d08a49`. Week 2 uses Ipopt for
 its nonlinear models and pins `installer.py` and `tutorial2.py` to published commit `41c99bd`. Both
-notebook setups check downloaded helper checksums and also support a local checkout.
-The notebooks are maintained in the staff course folder; weeks 3–5 still await their planned revision.
+notebook setups check downloaded helper checksums and also support a local checkout. Week 3 uses
+HiGHS for its LPs and Ipopt for its quadratic primal/dual, pinning `installer.py` and `tutorial3.py`
+to published commit `07c07eb`. It teaches direct suffix access and preserves raw row-dual signs.
+The notebooks are maintained in the staff course folder; weeks 4–5 still await their planned revision.
 
 ## Helper conventions
 
