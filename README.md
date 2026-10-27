@@ -71,8 +71,10 @@ with `installer.install_idaes_solvers(destination="./bin")`; platform/download e
 See [IDAES binary installation options](https://idaes-pse.readthedocs.io/en/latest/reference_guides/commands/get_extensions.html).
 
 The old catalog of CBC, CPLEX and other solver installers has been retired. The revised 2026 week-1
-notebook uses HiGHS and pins its drawing helpers to published commit `2d08a49`, with a checksum check.
-The notebooks are maintained in the staff course folder; weeks 2–5 still await their planned revision.
+notebook uses HiGHS and pins its drawing helpers to published commit `2d08a49`. Week 2 uses Ipopt for
+its nonlinear models and pins `installer.py` and `tutorial2.py` to published commit `41c99bd`. Both
+notebook setups check downloaded helper checksums and also support a local checkout.
+The notebooks are maintained in the staff course folder; weeks 3–5 still await their planned revision.
 
 ## Helper conventions
 
@@ -90,8 +92,9 @@ from tutorial3 import add_dual_variables, display_dual_variables
 - `display_side_by_side` accepts repeated captions and requires one caption per dataframe.
 - `plot_objective` uses the plot's actual axis variables, independently of their display labels. A multivariable
   objective needs explicit level values. An empty level list raises a clear error.
-- `generateinstance(m, n, seed)` is retained because existing notebooks import it. It requires positive integer
-  dimensions with `m >= n`, checks full column rank without forming a Gram matrix, and has bounded retries.
+- `generateinstance(m, n, seed)` is retained for compatibility with the 2025 notebooks; revised week 2 no longer
+  imports it. It requires positive integer dimensions with `m >= n`, checks full column rank without forming
+  a Gram matrix, and has bounded retries.
 - Attach the dual suffix before a continuous solve and display duals only after a successful solve. The display
   helper handles indexed constraints and active nested blocks. It shows the original row and the **raw RHS dual**;
   missing duals are reported as unavailable. For minimization written as `g(x) <= b`, the textbook multiplier in
