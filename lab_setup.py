@@ -113,6 +113,18 @@ def _requirements(week, extra_packages):
     return requirements
 
 
+def _loaded_versions(versions):
+    return {name: installed for name, installed in versions.items()
+            if _IMPORT_NAMES.get(name, name.replace("-", "_")) in sys.modules}
+
+
+def _check_restart(loaded):
+    changed = [name for name, installed in loaded.items() if installed != _version(name)]
+    if changed:
+        raise SetupError("Packages changed after import: " + ", ".join(sorted(changed))
+                         + ". Restart the kernel, then rerun Setup before other cells.")
+
+
 def _prepare_packages(requirements, install):
     before = {name: _version(name) for name in requirements}
     missing = [name for name, expected in requirements.items()
@@ -125,15 +137,11 @@ def _prepare_packages(requirements, install):
             raise SetupError("Missing or incompatible packages: " + ", ".join(missing)
                              + ". Install them in this notebook's environment with:\n"
                              + " ".join(command) + "\nThen restart the kernel and rerun Setup.")
-        loaded = {name for name in requirements
-                  if _IMPORT_NAMES.get(name, name.replace("-", "_")) in sys.modules}
+        loaded = _loaded_versions(before)
         # Capture successful pip output; retain the complete log on failure.
         subprocess.run(command, check=True, capture_output=True, text=True)
         importlib.invalidate_caches()
-        changed = [name for name in loaded if before[name] != _version(name)]
-        if changed:
-            raise SetupError("Packages changed after import: " + ", ".join(sorted(changed))
-                             + ". Restart the kernel, then rerun Setup before other cells.")
+        _check_restart(loaded)
     versions = {name: _version(name) for name in requirements}
     for name, expected in requirements.items():
         if versions[name] is None or (expected and versions[name] != expected):
@@ -305,12 +313,17 @@ def setup(week, *, install=None, solvers=None, extra_packages=(), solver_options
     stage = "Python packages"
     try:
         versions = _prepare_packages(requirements, install)
-        stage = "course helpers"
-        helpers = {name: _load_helper(name, cache, local) for name in PROFILES[week]["helpers"]}
         stage = "Ipopt executable"
         if "ipopt" in names:
+            loaded = _loaded_versions(versions)
             installer = _load_helper("installer", cache, local)
             versions["ipopt"] = _prepare_ipopt(installer, cache, install)
+            # IDAES may install dependencies too. Check loaded versions and pins
+            # before importing plotting/dual helpers or reporting readiness.
+            _check_restart(loaded)
+            versions.update(_prepare_packages(requirements, False))
+        stage = "course helpers"
+        helpers = {name: _load_helper(name, cache, local) for name in PROFILES[week]["helpers"]}
         stage = "solver interfaces"
         import pyomo.environ as pyo
         prepared = {}
