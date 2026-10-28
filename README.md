@@ -9,7 +9,7 @@ TA contacts and submission instructions.
 For the revised W1–W3 Colab notebooks, run the two setup cells before starting.
 The first cell is displayed as a form; expand it to inspect the source. It loads
 `lab_setup.py` from a fixed public commit, checks its SHA-256 checksum before
-execution, then calls `setup(week=...)`. No Drive mount, GitHub login, repository
+execution, then calls `setup(week=..., check=False, verbose=False)`. No Drive mount, GitHub login, repository
 clone or package installation of this repository is needed.
 
 The course modules remain ordinary Python files:
@@ -63,9 +63,11 @@ the environment because their temporary files and installations do not persist.
 The notebook's small initial loader retrieves `lab_setup.py` on each run; if that
 request fails, rerun the setup cell once connectivity is restored.
 
-Setup runs a small LP with indexed duals and a known infeasible LP for HiGHS,
-and a convex quadratic for Ipopt. It reports the selected solver versions and
-helper source. A failed stage retains its original exception and installation
+Student notebook setup checks package versions and solver availability without
+running staff test models or printing diagnostic reports. Staff can explicitly
+request `check=True` to solve a small LP with indexed duals, a known infeasible LP
+for HiGHS, and a convex quadratic for Ipopt, and use `verbose=True` for versions
+and helper provenance. A failed stage retains its original exception and installation
 log. These checks establish readiness, not correctness of an exercise model.
 
 ### Local notebooks and development
@@ -95,6 +97,26 @@ The notebook then reads these local files without applying public checksums.
 The `local_repo=` argument to `setup` controls supporting helper files when the
 setup module has already been imported. Use absolute paths; a changed working
 directory does not change the course cache or a resolved helper directory.
+
+### Solving and reporting
+
+`solve_and_load(model, solver)` checks optimal termination before loading a
+solution. W1 shows these steps next to its first LP, rather than in Setup.
+For LP/MILP experiments, `solve(model, options=...)` returns a dictionary with
+`status`, `objective`, `bound`, `gap`, `nodes` and `time`. The helper loads only
+an available feasible solution; an absent incumbent is reported as `None`.
+An `optimal` status certifies an optimum. A limited solve can return `other`
+while providing an incumbent and a valid bound. Check status before interpreting
+values; `gap` is a fraction and `bound` is the processed solver bound, not a
+separately solved plain LP value. `relax_integrality(model)` relaxes every integer
+domain in place. Use fresh models for LP, root-limited and full MILP comparisons.
+
+W1 covers shipping visit inequalities and aggregated/individual facility links.
+W2 adds independent OLS evaluation and a coordination surcharge with isolated
+product tests. W2 Exercise 7 has its own collapsed HiGHS setup and supplied base
+builder: run those cells to work on it independently of Exercises 1–6 and Ipopt.
+Visible Setup code contains scientific imports and symbolic plotting variables;
+helper loading, formatting and staff diagnostics stay out of the student flow.
 
 ### Future lab requirements
 

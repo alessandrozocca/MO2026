@@ -356,6 +356,87 @@ def setup(week, *, install=None, solvers=None, extra_packages=(), solver_options
         raise SetupError(f"Setup failed during {stage}: {detail}") from exc
 
 
+def solve_and_load(model, solver=None):
+    """Check optimal termination before loading a solution or evaluating it."""
+    import pyomo.environ as pyo
+    solver = pyo.SolverFactory("appsi_highs") if solver is None else solver
+    result = solver.solve(model, load_solutions=False)
+    pyo.assert_optimal_termination(result)
+    model.solutions.load_from(result)
+    return result
+
+
+def relax_integrality(model):
+    """Relax all integer domains in place, including fixed binary variables."""
+    import pyomo.environ as pyo
+    pyo.TransformationFactory("core.relax_integer_vars").apply_to(model)
+    return model
+
+
+def solve(model, time_limit=180, tee=False, options=None):
+    """Solve an LP/MILP with HiGHS and return a status-aware numerical report.
+
+    The keys are ``status``, ``objective``, ``time``, ``nodes``, ``bound`` and
+    ``gap``. Only an optimal report certifies an optimum. A limited solve may
+    load an incumbent without proving optimality; no incumbent means objective
+    is None. The bound is the solver's best proven bound, not the plain LP value.
+    Solve a fresh model for each experiment. ``gap`` is a fraction, not percent.
+
+    The tested highspy interface supplies the node count and MIP bound inside
+    this helper; notebooks need not access solver internals. Duals are loaded
+    only for an optimal continuous model with an IMPORT suffix.
+    """
+    import pyomo.environ as pyo
+    if time_limit <= 0 or not math.isfinite(time_limit):
+        raise ValueError("time_limit must be finite and positive")
+    opt = pyo.SolverFactory("appsi_highs")
+    opt.options.update(options or {})
+    is_mip = any(v.is_integer() or v.is_binary()
+                 for v in model.component_data_objects(pyo.Var, active=True))
+    has_free_integer = any((v.is_integer() or v.is_binary()) and not v.fixed
+                           for v in model.component_data_objects(pyo.Var, active=True))
+    suffix = getattr(model, "dual", None)
+    suffix = suffix if isinstance(suffix, pyo.Suffix) else None
+    direction = suffix.direction if suffix is not None else None
+    if suffix is not None:
+        suffix.direction = pyo.Suffix.LOCAL
+        suffix.clear()
+    start = time.perf_counter()
+    try:
+        result = opt.solve(model, load_solutions=False, tee=tee, timelimit=time_limit)
+    finally:
+        if suffix is not None:
+            suffix.direction = direction
+    elapsed = time.perf_counter() - start
+    termination = result.solver.termination_condition
+    status = {
+        pyo.TerminationCondition.optimal: "optimal",
+        pyo.TerminationCondition.maxTimeLimit: "time_limit",
+        pyo.TerminationCondition.infeasible: "infeasible",
+        pyo.TerminationCondition.unbounded: "unbounded",
+    }.get(termination, "other")
+    report = dict(status=status, objective=None, time=elapsed, nodes=None, bound=None, gap=None)
+    info = opt._solver_model.getInfo()
+    feasible = status not in ("infeasible", "unbounded") and info.primal_solution_status == 2
+    if feasible:
+        opt.load_vars()
+        objective = next(model.component_data_objects(pyo.Objective, active=True))
+        report["objective"] = float(pyo.value(objective))
+        if suffix is not None and direction & pyo.Suffix.IMPORT and not is_mip and status == "optimal":
+            for row, value in opt.get_duals().items():
+                suffix[row] = value
+    if has_free_integer:
+        report["nodes"] = int(info.mip_node_count) if info.mip_node_count >= 0 else None
+        bound = float(info.mip_dual_bound)
+        report["bound"] = bound if status not in ("infeasible", "unbounded") and math.isfinite(bound) else None
+        gap = float(info.mip_gap)
+        report["gap"] = gap if feasible and math.isfinite(gap) else None
+    else:
+        report.update(nodes=0, bound=report["objective"] if status == "optimal" else None,
+                      gap=0.0 if status == "optimal" else None)
+    return report
+
+
 def format_number(value, digits=4):
     """Format text without changing a decision; suppress a rounded signed zero."""
     rounded = round(float(value), digits)
