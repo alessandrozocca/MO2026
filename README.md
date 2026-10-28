@@ -4,92 +4,121 @@ Helper functions for the Mathematical Optimization course at Vrije Universiteit 
 Teachers: Alessandro Zocca and Rosario Paradiso. Use the current course page on Canvas for deadlines,
 TA contacts and submission instructions.
 
-## Current layout
+## Computer lab setup
 
-The helpers are currently ordinary Python modules in this directory:
+For the revised W1–W3 Colab notebooks, run the two setup cells before starting.
+The first cell is displayed as a form; expand it to inspect the source. It loads
+`lab_setup.py` from a fixed public commit, checks its SHA-256 checksum before
+execution, then calls `setup(week=...)`. No Drive mount, GitHub login, repository
+clone or package installation of this repository is needed.
 
-- `installer.py`: setup and readiness checks for the course solver stack;
+The course modules remain ordinary Python files:
+
+- `lab_setup.py`: package checks, verified helper downloads and solver preparation;
+- `installer.py`: the existing solver installer and standalone readiness checks;
 - `tutorial1.py`: graph/network drawings and side-by-side dataframe display;
 - `tutorial2.py`: feasible-region and objective plots;
 - `tutorial3.py`: attaching and displaying constraint duals.
 
-Run from a checkout of this directory, or add it to the notebook's Python import path. This checkout has no
-package metadata yet. The planned `mo2026` package, reviewed `common.py` and immutable lab release tag are
-separate migration steps; a `pip install` of this Git repository is not the current installation method.
-Pin a reviewed commit or tag when preparing the 2026 notebook setup cells.
+The setup module imports only the Python standard library. Importing it does not
+install packages, download files, change the Python import path or run solvers.
+An explicit `setup(...)` call performs those operations and returns named objects;
+it does not insert notebook variables, seed random generators or load datasets.
 
-The revised notebooks also support a local checkout through `MO2026_REPO`. Set
-it before starting Jupyter, for example:
+```python
+import lab_setup  # when this file is already available locally
+lab = lab_setup.setup(week=3)
+lp_solver, nlp_solver = lab.lp_solver, lab.nlp_solver
+add_dual_variables = lab.helpers["tutorial3"].add_dual_variables
+```
+
+| Week | Default interfaces | Additional packages and course helpers |
+|---|---|---|
+| 1 | HiGHS (`appsi_highs`) | Matplotlib, NetworkX, SciPy; `tutorial1` |
+| 2 | Ipopt | Matplotlib, SymPy, SciPy, scikit-learn; `tutorial2` |
+| 3 | HiGHS and Ipopt | `tutorial3` |
+| 4 preparation | HiGHS | Matplotlib, SciPy |
+| 5 preparation | HiGHS and Ipopt | Matplotlib, SciPy, Requests |
+
+Every profile also checks Pyomo 6.10.1, highspy 1.15.1, NumPy, pandas, IPython
+and Jinja2. The latter provides pandas Styler HTML support. Installation is
+permitted by default on Colab and disabled elsewhere. Compatible installed
+packages are reused. If installation changes a package already imported into
+the session, setup stops and asks for a kernel restart; rerun Setup afterwards.
+
+Python 3.10 or newer is required. HiGHS handles LP/MILP models. Ipopt handles
+smooth continuous nonlinear models and does not certify global optimality for
+nonconvex problems. It is a separate executable, not supplied by Pyomo or highspy.
+When needed, setup reuses a verified existing executable or, on Colab, requests
+`idaes-pse==2.13.0` and IDAES binary release `3.4.2` through the course installer.
+Downloaded executables are stored in a temporary course cache and checked before
+they are added to PATH. IDAES checksums remain enabled. Platform/download errors
+stop setup. See the [IDAES binary installation options](https://idaes-pse.readthedocs.io/en/stable/reference_guides/commands/get_extensions.html).
+
+Course helper files are downloaded from public commit `07c07eb` and checked
+against fixed SHA-256 values. Cache files are verified before reuse; invalid
+files are downloaded again and verified before replacement. Network timeouts
+and transient failures have bounded retries. New Colab runtimes need to recreate
+the environment because their temporary files and installations do not persist.
+The notebook's small initial loader retrieves `lab_setup.py` on each run; if that
+request fails, rerun the setup cell once connectivity is restored.
+
+Setup runs a small LP with indexed duals and a known infeasible LP for HiGHS,
+and a convex quadratic for Ipopt. It reports the selected solver versions and
+helper source. A failed stage retains its original exception and installation
+log. These checks establish readiness, not correctness of an exercise model.
+
+### Local notebooks and development
+
+Install the packages once in the environment running your notebook:
+
+```bash
+python -m pip install "pyomo==6.10.1" "highspy==1.15.1" numpy pandas matplotlib networkx sympy scipy scikit-learn ipython jinja2
+```
+
+For W2/W3, install Ipopt separately on PATH; one option is
+`conda install -c conda-forge ipopt`. See the
+[Ipopt installation documentation](https://coin-or.github.io/Ipopt/INSTALL.html).
+Missing packages or Ipopt raise instructions locally instead of installing them.
+An explicit `setup(..., install=True)` permits both package installation and the
+course binary download; `install=False` disables both, including on Colab.
+
+To test editable helpers, set `MO2026_REPO` before starting Jupyter:
 
 ```bash
 export MO2026_REPO="/path/to/MO2026"
 jupyter lab
 ```
 
-Use the directory containing `installer.py` and the `tutorial*.py` modules. This
-override imports the local files directly, without applying the public commit's
-checksums, so staff can test helper edits. Without the override, the notebooks
-download and verify their pinned public helpers.
+Use the directory containing `lab_setup.py`, `installer.py` and `tutorial*.py`.
+The notebook then reads these local files without applying public checksums.
+The `local_repo=` argument to `setup` controls supporting helper files when the
+setup module has already been imported. Use absolute paths; a changed working
+directory does not change the course cache or a resolved helper directory.
 
-## Python dependencies
+### Future lab requirements
 
-Activate the environment used by your local notebook and install:
-
-```bash
-python -m pip install "pyomo==6.10.1" "highspy==1.15.1" numpy pandas matplotlib networkx sympy scipy scikit-learn ipython jinja2
-```
-
-In Colab, use `%pip` in the notebook kernel for the same dependencies:
+W4/W5 preparation profiles do not modernize or validate the legacy notebooks.
+The legacy W5 CPLEX interface is not installed automatically, and Ipopt is not
+a substitute for a dedicated conic solver. A revised notebook can select its
+interfaces explicitly, add Python dependencies, and configure solver options:
 
 ```python
-%pip install "pyomo==6.10.1" "highspy==1.15.1" numpy pandas matplotlib networkx sympy scipy scikit-learn ipython jinja2
+lab = lab_setup.setup(
+    week=5,
+    solvers=("appsi_highs", "ipopt"),
+    extra_packages=("sympy",),
+    solver_options={"ipopt": {"tol": 1e-8}},
+)
 ```
 
-Restart the kernel if an already-imported package was changed. Jinja2 supplies the optional pandas Styler
-HTML display support. Importing these helpers does not install packages or download solvers.
-
-From this checkout, check the LP/MILP environment with:
-
-```python
-import installer
-print(installer.check_solvers())
-```
-
-This verifies the pinned versions, solves a known LP, checks its indexed duals, and checks that a second LP
-is infeasible. `installer.install_pyomo()` and `installer.install_highs()` are optional checked installers
-for the two pinned packages; they use the active Python interpreter and propagate installation failures.
-
-## Ipopt for nonlinear models
-
-HiGHS through the course's `appsi_highs` interface handles LP/MILP models. Use a separate Ipopt executable
-for the nonlinear examples. Installing Pyomo or highspy does not install that executable.
-
-For a local environment, install Ipopt separately and put it on PATH; one option is
-`conda install -c conda-forge ipopt` in the notebook's environment. See the
-[Ipopt installation documentation](https://coin-or.github.io/Ipopt/INSTALL.html).
-`installer.install_ipopt()` verifies an existing executable and raises with instructions if it is missing locally.
-
-On Colab, after installing the Python dependencies and making these modules available, run:
-
-```python
-import installer
-installer.install_ipopt()
-print(installer.check_solvers(include_ipopt=True))
-```
-
-If Ipopt is missing on Colab, the helper installs `idaes-pse==2.13.0` with the course Pyomo/HiGHS pins,
-then downloads IDAES binary release `3.4.2` into `./bin`. It checks the command result and the downloaded
-Ipopt executable before adding that directory to PATH. The same download can be explicitly requested locally
-with `installer.install_idaes_solvers(destination="./bin")`; platform/download errors propagate.
-See [IDAES binary installation options](https://idaes-pse.readthedocs.io/en/latest/reference_guides/commands/get_extensions.html).
-
-The old catalog of CBC, CPLEX and other solver installers has been retired. The revised 2026 week-1
-notebook uses HiGHS and pins its drawing helpers to published commit `2d08a49`. Week 2 uses Ipopt for
-its nonlinear models and pins `installer.py` and `tutorial2.py` to published commit `41c99bd`. Both
-notebook setups check downloaded helper checksums and also support a local checkout. Week 3 uses
-HiGHS for its LPs and Ipopt for its quadratic primal/dual, pinning `installer.py` and `tutorial3.py`
-to published commit `07c07eb`. It teaches direct suffix access and preserves raw row-dual signs.
-The notebooks are maintained in the staff course folder; weeks 4–5 still await their planned revision.
+`extra_packages` accepts distribution names or exact version pins and cannot
+replace the course solver pins. Other Pyomo interfaces can be selected, but
+their packages, executables and licenses must be supplied separately. Additional
+interfaces receive an availability check; the built-in solve checks apply only
+to HiGHS and Ipopt. Solver capabilities and mathematical reformulations remain
+explicit choices in the notebook. No statistical sampling or data manipulation
+belongs in the setup module.
 
 ## Helper conventions
 
@@ -116,12 +145,11 @@ from tutorial3 import add_dual_variables, display_dual_variables
   `L = f + lambda * (g - b)` is minus that raw dual. At a kink it is a supporting slope, not necessarily a unique
   derivative. Integer models require fixing the design and solving a continuous model before interpreting LP duals.
 
-## Verification and release status
+## Verification status
 
-The helper checks use the course's Pyomo 6.10.1 and highspy 1.15.1 pins. Local verification uses Python 3.13.14
-and Ipopt 3.14.20. The installer failure cases are checked with mocked commands; a fresh Colab installation and
-“Restart and run all” remain release checks. IDAES binary downloads have not been claimed as tested on Colab.
-
-Keep this repository at the helper-only stage until the scheduled assignment releases. Add A1 instance support
-for 11 November; add A2 support/data only after the A1 deadline on 23 November, for the 25 November release.
-Staff solutions, reference models and graders belong in the staff course folder.
+Local verification uses Python 3.13.14, Pyomo 6.10.1, highspy 1.15.1 and Ipopt
+3.14.20. Checks cover import isolation, checksum failures, cached and local
+helpers, repeated setup, package/restart failure paths, solver options and actual
+solver calls. A fresh hosted Colab installation and session restart remain
+separate release checks; mocked installation tests are not evidence of a
+successful IDAES binary download on Colab.
