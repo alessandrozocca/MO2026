@@ -16,8 +16,8 @@ editing. You do not need a GitHub account.
 | Computer labs in Colab |
 |---|
 | [Open W1 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%201.ipynb#copy=true) |
-| [Open W2 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%202.ipynb#copy=true) |
-| [Open W3 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%203.ipynb#copy=true) |
+| W2 computer lab notebook (link available in Week 2) |
+| W3 computer lab notebook (link available in Week 3) |
 | Open W4 computer lab notebook in Colab (coming soon) |
 | Open W5 computer lab notebook in Colab (coming soon) |
 
@@ -27,6 +27,9 @@ GitHub.
 
 Run the cells under **Setup** as provided before starting the exercises. They
 prepare the required packages, solvers and course imports automatically.
+On a new runtime, allow a minute or more for setup. Wait for the `Week N ready`
+message. Ipopt setup may first print `Downloading Ipopt...`; installation logs
+are shown only if a stage fails.
 
 Week 2 Exercise 7 has its own setup and can be run independently of Exercises
 1–6 and Ipopt. Run the setup and supplied model-builder cells in that exercise.
@@ -65,4 +68,11 @@ for other options. Pyomo and highspy do not supply Ipopt.
 You can download your saved Colab copy using **File → Download → Download .ipynb**,
 then open it in Jupyter and run its Setup cells. These still download course
 helpers, so internet access is required. Outside Colab, setup reports missing
-dependencies instead of installing them automatically.
+Python dependencies instead of installing them automatically. In W2, plotting
+and data work remain available without Ipopt; nonlinear solve cells explain how
+to install it when needed.
+
+On a python.org installation for macOS, an SSL certificate error may mean that
+the bundled **Install Certificates.command** has not been run. Run it from the
+Python folder in Applications, then rerun Setup. Keep certificate verification
+enabled.

@@ -41,7 +41,7 @@ HELPER_SHA256 = {
     "tutorial3": "17d4aaf1f6e214db88c8c357ac933cd9f6552e602b5dbfa4dfb5a9eed6d3875b",
 }
 _RAW_ROOT = f"https://raw.githubusercontent.com/alessandrozocca/MO2026/{HELPER_COMMIT}"
-_IMPORT_NAMES = {"scikit-learn": "sklearn", "ipython": "IPython"}
+_IMPORT_NAMES = {"scikit-learn": "sklearn", "ipython": "IPython", "idaes-pse": "idaes"}
 _BASE_PACKAGES = (f"pyomo=={PYOMO_VERSION}", f"highspy=={HIGHSPY_VERSION}",
                   "numpy", "pandas", "ipython", "jinja2")
 
@@ -218,16 +218,26 @@ def _load_helper(name, cache, local_repo):
     return module
 
 
-def _prepare_ipopt(installer, cache, install):
+def _prepare_ipopt(installer, cache, install, optional=False):
     if shutil.which("ipopt"):
         return installer._verify_ipopt()
     destination = cache / f"ipopt-{installer.IDAES_BINARY_RELEASE}"
     executable = destination / ("ipopt.exe" if os.name == "nt" else "ipopt")
     if not executable.is_file():
         if not install:
+            if optional:
+                return None
             raise SetupError("Ipopt is not on PATH. Install its separate executable, "
                              "or explicitly use setup(..., install=True) to request the course binary download.")
-        installer.install_idaes_solvers(destination=destination)
+        _prepare_packages({"idaes-pse": installer.IDAES_VERSION,
+                           "pyomo": PYOMO_VERSION, "highspy": HIGHSPY_VERSION}, True)
+        destination.mkdir(parents=True, exist_ok=True)
+        print("Downloading Ipopt...")
+        subprocess.run(
+            [sys.executable, "-c", "from idaes.commands.base import command_base; command_base()",
+             "get-extensions", "--release", installer.IDAES_BINARY_RELEASE, "--to", str(destination)],
+            check=True, capture_output=True, text=True,
+        )
     description = installer._verify_ipopt(executable)
     entries = os.environ.get("PATH", "").split(os.pathsep)
     os.environ["PATH"] = os.pathsep.join([str(destination), *[p for p in entries if p != str(destination)]])
@@ -269,7 +279,7 @@ def _check_solver(pyo, name, solver):
 
 
 def setup(week, *, install=None, solvers=None, extra_packages=(), solver_options=None,
-          local_repo=None, cache_dir=None, check=True, verbose=True):
+          local_repo=None, cache_dir=None, check=True, verbose=True, optional_ipopt=False):
     """Return a prepared ``LabEnvironment`` for a week from 1 to 5.
 
     ``install=None`` permits installation only on Colab. ``install=False`` never
@@ -288,12 +298,19 @@ def setup(week, *, install=None, solvers=None, extra_packages=(), solver_options
     staff environment variable ``MO2026_REPO``) reads editable helper files from
     that directory without public checksums. Cache paths are absolute and do
     not depend on the notebook's current working directory.
+
+    ``optional_ipopt=True`` permits plotting/data work when Ipopt is absent and
+    installation is disabled. Then ``nlp_solver`` is None. Installation failures
+    and unusable existing/cached binaries still raise. Other solvers and package
+    requirements are unchanged.
     """
     if sys.version_info < (3, 10):
         raise SetupError("The computer lab helpers require Python 3.10 or newer.")
     requirements = _requirements(week, extra_packages)
     if install is not None and not isinstance(install, bool):
         raise ValueError("install must be True, False or None")
+    if not isinstance(optional_ipopt, bool):
+        raise ValueError("optional_ipopt must be True or False")
     install = on_colab() if install is None else install
     names = PROFILES[week]["solvers"] if solvers is None else solvers
     if not isinstance(names, (tuple, list)) or not names or any(
@@ -317,7 +334,7 @@ def setup(week, *, install=None, solvers=None, extra_packages=(), solver_options
         if "ipopt" in names:
             loaded = _loaded_versions(versions)
             installer = _load_helper("installer", cache, local)
-            versions["ipopt"] = _prepare_ipopt(installer, cache, install)
+            versions["ipopt"] = _prepare_ipopt(installer, cache, install, optional_ipopt)
             # IDAES may install dependencies too. Check loaded versions and pins
             # before importing plotting/dual helpers or reporting readiness.
             _check_restart(loaded)
@@ -328,6 +345,8 @@ def setup(week, *, install=None, solvers=None, extra_packages=(), solver_options
         import pyomo.environ as pyo
         prepared = {}
         for name in names:
+            if name == "ipopt" and versions.get("ipopt") is None:
+                continue
             stage = f"{name} solver interface"
             solver = pyo.SolverFactory(name)
             if not solver.available(exception_flag=False):
@@ -344,10 +363,14 @@ def setup(week, *, install=None, solvers=None, extra_packages=(), solver_options
         environment = LabEnvironment(week=week, solvers=prepared, helpers=helpers,
                                      versions=versions, source=source, checks_run=bool(check))
         if verbose:
-            descriptions = [f"HiGHS {versions['highspy']}" if name == "appsi_highs"
-                            else versions.get(name, name) for name in names]
-            print(f"Week {week} ready: Pyomo {versions['pyomo']}; "
-                  + "; ".join(descriptions) + f". Course setup API {API_VERSION}; {source}.")
+            if "ipopt" in names and environment.nlp_solver is None:
+                print(f"Week {week} ready for plotting and data work; Ipopt is unavailable. "
+                      "Install its separate executable before running nonlinear solve cells.")
+            else:
+                descriptions = [f"HiGHS {versions['highspy']}" if name == "appsi_highs"
+                                else versions.get(name, name) for name in names]
+                print(f"Week {week} ready: Pyomo {versions['pyomo']}; "
+                      + "; ".join(descriptions) + ".")
         return environment
     except Exception as exc:
         detail = str(exc)
