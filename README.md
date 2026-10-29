@@ -8,13 +8,19 @@ submission requirements.
 
 ## Computer lab setup
 
-Open your week's notebook in Google Colab and save your own copy before editing.
+Sign in to Colab with your **Google account**, then use your week's link below.
+The link opens a copy dialog. Save a copy in **your own Google Drive** before
+editing. You do not need a GitHub account.
 
-| Notebook | Open in Colab |
+| Notebook | Make your own Colab copy |
 |---|---|
-| [Week 1: linear and integer optimization](labs/Computer%20exercises%20week%201.ipynb) | [Open](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%201.ipynb) |
-| [Week 2: convex and nonlinear optimization](labs/Computer%20exercises%20week%202.ipynb) | [Open](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%202.ipynb) |
-| [Week 3: duality](labs/Computer%20exercises%20week%203.ipynb) | [Open](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%203.ipynb) |
+| [Week 1: linear and integer optimization](labs/Computer%20exercises%20week%201.ipynb) | [Copy Week 1 to Drive](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%201.ipynb#copy=true) |
+| [Week 2: convex and nonlinear optimization](labs/Computer%20exercises%20week%202.ipynb) | [Copy Week 2 to Drive](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%202.ipynb#copy=true) |
+| [Week 3: duality](labs/Computer%20exercises%20week%203.ipynb) | [Copy Week 3 to Drive](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%203.ipynb#copy=true) |
+
+If the copy dialog does not appear, choose **File → Save a copy in Drive**.
+Work in the saved copy; your edits there do not change the course notebook on
+GitHub.
 
 Run the two cells under **Setup** before starting the exercises. On Colab, they
 prepare the required packages, solvers and course helpers automatically. The
