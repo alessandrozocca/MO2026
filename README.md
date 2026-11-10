@@ -40,8 +40,8 @@ editing. You do not need a GitHub account.
 | Computer labs in Colab |
 |---|
 | [Open W1 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%201.ipynb#copy=true) |
-| W2 computer lab notebook (link available in Week 2) |
-| W3 computer lab notebook (link available in Week 3) |
+| [Open W2 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%202.ipynb#copy=true) |
+| [Open W3 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%203.ipynb#copy=true) |
 | Open W4 computer lab notebook in Colab (coming soon) |
 | Open W5 computer lab notebook in Colab (coming soon) |
 
