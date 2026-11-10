@@ -1,0 +1,22 @@
+[project]
+name = "mo2026"
+version = "0.1.0"
+description = "Helpers for the practical assignments of Mathematical Optimization (XM_0051), VU Amsterdam, 2026-27"
+requires-python = ">=3.10"
+dependencies = [
+    "pyomo==6.10.1",     # tested versions; the solver statistics in common.solve use HiGHS's own interface
+    "highspy==1.15.1",
+    "numpy",
+    "pandas",
+    "matplotlib",
+]
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["mo2026"]
+
+[tool.setuptools.package-data]
+mo2026 = ["data/*.csv", "data/*.md"]

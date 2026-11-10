@@ -1,10 +1,34 @@
 # Mathematical Optimization 2026–27
 
-Computer labs and Python helpers for Mathematical Optimization at Vrije
+Computer labs and assignment helpers for Mathematical Optimization at Vrije
 Universiteit Amsterdam. Teachers: Alessandro Zocca and Rosario Paradiso.
 
 Use the course page on Canvas for lab instructions, deadlines and submission
 requirements.
+
+## Assignment 1
+
+The A1 student notebook is distributed separately through Canvas. In Google Colab,
+upload that notebook, save a copy in your own Google Drive, and run its Setup cells before
+entering your student number. The package supplies your instance generator,
+plots and the HiGHS solve helper. Its dependencies include the tested Pyomo and
+highspy versions; A1 needs no separate solver executable.
+
+For a local Jupyter environment with Python 3.10 or newer, install:
+
+```bash
+python -m pip install "mo2026 @ git+https://github.com/alessandrozocca/MO2026@a1"
+```
+
+Use your own student number throughout. Enter a variant suffix only if the
+teachers provide one. On a new Colab runtime, rerun Setup.
+
+Before uploading your completed notebook to Canvas, use **Restart and run all**,
+run the answer-formatting cell, and save the notebook with all outputs.
+`check_answer_format` checks required keys and basic types only.
+`print_answer_block` prints a JSON block into the notebook output for the staff
+grader. These functions do not check mathematical correctness, save the
+notebook or submit it. Upload the `.ipynb` file to Canvas yourself.
 
 ## Computer lab setup
 
