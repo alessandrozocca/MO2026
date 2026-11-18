@@ -42,7 +42,7 @@ editing. You do not need a GitHub account.
 | [Open W1 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%201.ipynb#copy=true) |
 | [Open W2 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%202.ipynb#copy=true) |
 | [Open W3 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%203.ipynb#copy=true) |
-| Open W4 computer lab notebook in Colab (coming soon) |
+| [Open W4 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%204.ipynb#copy=true) |
 | Open W5 computer lab notebook in Colab (coming soon) |
 
 If the copy dialog does not appear, choose **File → Save a copy in Drive**.
