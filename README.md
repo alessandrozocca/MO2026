@@ -43,7 +43,7 @@ editing. You do not need a GitHub account.
 | [Open W2 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%202.ipynb#copy=true) |
 | [Open W3 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%203.ipynb#copy=true) |
 | [Open W4 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%204.ipynb#copy=true) |
-| Open W5 computer lab notebook in Colab (coming soon) |
+| [Open W5 computer lab notebook in Colab](https://colab.research.google.com/github/alessandrozocca/MO2026/blob/main/labs/Computer%20exercises%20week%205.ipynb#copy=true) |
 
 If the copy dialog does not appear, choose **File → Save a copy in Drive**.
 Work in the saved copy; your edits there do not change the course notebook on
@@ -76,10 +76,11 @@ Use Python 3.10 or newer. Install the following packages in the Python environme
 used by your notebook:
 
 ```bash
-python -m pip install "pyomo==6.10.1" "highspy==1.15.1" numpy pandas matplotlib networkx sympy scipy scikit-learn ipython jinja2
+python -m pip install "pyomo==6.10.1" "highspy==1.15.1" numpy pandas matplotlib networkx sympy scipy scikit-learn ipython jinja2 requests
 ```
 
 Weeks 2 (Exercises 1–6) and 3 also require the separate Ipopt executable on PATH.
+Week 5 Setup requires Ipopt on PATH.
 If you use conda, one installation option is:
 
 ```bash
