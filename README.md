@@ -30,6 +30,22 @@ run the answer-formatting cell, and save the notebook with all outputs.
 grader. These functions do not check mathematical correctness, save the
 notebook or submit it. Upload the `.ipynb` file to Canvas yourself.
 
+## Assignment 2
+
+Use the A2 student notebook distributed through Canvas and the same student
+number, including any teacher-assigned suffix, as in A1. A2 uses package version
+0.2.0. Its Setup cell upgrades the package in Colab. For local Jupyter, use
+Python 3.13 and install in your notebook's environment with:
+
+```bash
+python -m pip install --upgrade "mo2026 @ git+https://github.com/alessandrozocca/MO2026@a2"
+```
+
+If you have already imported the A1 package in this session, install A2, restart
+the notebook session, then rerun Setup. A2 supplies its network and historical
+scenarios; it does not require your completed A1 notebook. The answer-formatting,
+saving and Canvas-upload steps above also apply to A2.
+
 ## Computer lab setup
 
 Use **Google Colab** for the computer labs. Sign in with your **Google account**,

@@ -1,6 +1,6 @@
 [project]
 name = "mo2026"
-version = "0.1.0"
+version = "0.2.0"
 description = "Helpers for the practical assignments of Mathematical Optimization (XM_0051), VU Amsterdam, 2026-27"
 requires-python = ">=3.10"
 dependencies = [
