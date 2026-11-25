@@ -1,8 +1,5 @@
 """Warmtenet under uncertainty: instances for Assignment 2 of MO 2026-27.
 
-RELEASE NOTE (staff): this module rebuilds the optimal Assignment-1 design of each student's district, so it must not
-be pushed to the public repository before the Assignment-1 deadline has passed.
-
 Scenarios are built from the coldest daily mean temperature of each winter (November-March) at De Bilt (KNMI station
 260), winters 1951-2026; the winter of 1951 runs from November 1950 to March 1951. Source: Royal Netherlands
 Meteorological Institute (KNMI), daily data (field TG); provenance and extraction in data/README.md. The temperatures
@@ -61,7 +58,11 @@ def _a1_design(base):
     m.src = pyo.Constraint(base.S, rule=lambda m, s: m.g[s] <= base.capacity[s] * m.o[s])
     opt = pyo.SolverFactory("appsi_highs")
     opt.options["mip_rel_gap"] = 0.0
-    opt.solve(m)
+    result = opt.solve(m, load_solutions=False)
+    if not pyo.check_optimal_termination(result):
+        status = result.solver.termination_condition
+        raise RuntimeError(f"HiGHS did not return an optimal starting network for Assignment 2 ({status}).")
+    opt.load_vars()
     built = sorted(e for e in base.E if pyo.value(m.y[e]) > 0.5)
     opened = sorted(s for s in base.S if pyo.value(m.o[s]) > 0.5)
     connected = sorted(k for k in base.K if pyo.value(m.z[k]) > 0.5)

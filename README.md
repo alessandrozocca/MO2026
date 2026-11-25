@@ -33,12 +33,12 @@ notebook or submit it. Upload the `.ipynb` file to Canvas yourself.
 ## Assignment 2
 
 Use the A2 student notebook distributed through Canvas and the same student
-number, including any teacher-assigned suffix, as in A1. A2 uses package version
-0.2.0. Its Setup cell upgrades the package in Colab. For local Jupyter, use
-Python 3.13 and install in your notebook's environment with:
+number, including any teacher-assigned suffix, as in A1. The A2 Setup cell
+upgrades to package version 0.2.1 in Colab. For local Jupyter, use Python 3.10 or
+newer and install in your notebook's environment:
 
 ```bash
-python -m pip install --upgrade "mo2026 @ git+https://github.com/alessandrozocca/MO2026@a2"
+python -m pip install --upgrade "mo2026 @ git+https://github.com/alessandrozocca/MO2026@a2-v0.2.1"
 ```
 
 If you have already imported the A1 package in this session, install A2, restart
