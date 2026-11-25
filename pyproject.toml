@@ -1,8 +1,8 @@
 [project]
 name = "mo2026"
-version = "0.2.1"
+version = "0.2.2"
 description = "Helpers for the practical assignments of Mathematical Optimization (XM_0051), VU Amsterdam, 2026-27"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.15"
 dependencies = [
     "pyomo==6.10.1",     # tested versions; the solver statistics in common.solve use HiGHS's own interface
     "highspy==1.15.1",

@@ -14,7 +14,8 @@ entering your student number. The package supplies your instance generator,
 plots and the HiGHS solve helper. Its dependencies include the tested Pyomo and
 highspy versions; A1 needs no separate solver executable.
 
-For a local Jupyter environment with Python 3.10 or newer, install:
+For local Jupyter, use Python 3.10–3.14 and install the package in the
+notebook's environment.
 
 ```bash
 python -m pip install "mo2026 @ git+https://github.com/alessandrozocca/MO2026@a1"
@@ -34,11 +35,11 @@ notebook or submit it. Upload the `.ipynb` file to Canvas yourself.
 
 Use the A2 student notebook distributed through Canvas and the same student
 number, including any teacher-assigned suffix, as in A1. The A2 Setup cell
-upgrades to package version 0.2.1 in Colab. For local Jupyter, use Python 3.10 or
-newer and install in your notebook's environment:
+upgrades to package version 0.2.2 in Colab. For local Jupyter, use Python
+3.10–3.14 and install the package in the notebook's environment.
 
 ```bash
-python -m pip install --upgrade "mo2026 @ git+https://github.com/alessandrozocca/MO2026@a2-v0.2.1"
+python -m pip install --upgrade "mo2026 @ git+https://github.com/alessandrozocca/MO2026@a2-v0.2.2"
 ```
 
 If you have already imported the A1 package in this session, install A2, restart
@@ -88,8 +89,8 @@ computer labs**. For errors, have your notebook and the full error message ready
 
 ### Running locally (optional)
 
-Use Python 3.10 or newer. Install the following packages in the Python environment
-used by your notebook:
+Use Python 3.10–3.14. Install the following packages in the Python environment
+used by your notebook.
 
 ```bash
 python -m pip install "pyomo==6.10.1" "highspy==1.15.1" numpy pandas matplotlib networkx sympy scipy scikit-learn ipython jinja2 requests

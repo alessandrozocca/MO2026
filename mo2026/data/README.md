@@ -14,12 +14,17 @@ winter labeled 1951 runs from November 1950 to March 1951. Columns: `winter`, `c
   `etmgeg_260.zip`. [KNMI daily station downloads](https://www.knmi.nl/nederland-nu/klimatologie/daggegevens)
 - **Extraction:** select station 260 and find the minimum TG in each November–March window. Where several days share
   the minimum, take the earliest date. Divide TG by 10 to obtain degrees Celsius.
+- **Reproduction:** on 25 November 2026, the station download contained a TG value on each of the 27,545 days in
+  the period. The extracted 76 winter minima reproduced the CSV byte for byte.
 
 ## Reuse
 
-The repository's MIT license covers the code. The underlying observations are from KNMI. The course authors selected
-the winter minima independently of KNMI and are responsible for this adaptation and its use in the assignment.
-[KNMI website reuse terms](https://www.knmi.nl/copyright)
+Source: KNMI (bron: KNMI). The course authors prepared this derived table and assignment independently of KNMI, with
+no implied endorsement by KNMI. The repository's MIT license covers the code.
+
+KNMI's copyright page describes CC0 for its website content unless otherwise stated. The daily-data download page
+gives no separate license for the station files.
+[KNMI website reuse terms](https://www.knmi.nl/copyright) · [KNMI daily station downloads](https://www.knmi.nl/nederland-nu/klimatologie/daggegevens)
 
 ## Homogenization
 
